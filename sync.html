@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync Manager - XAMPP ↔ Supabase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: #1a1a2e;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        .header-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #4361ee;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #3a56d4;
+        }
+        .btn-success {
+            background: #2ec4b6;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #25a99d;
+        }
+        .btn-warning {
+            background: #ff9f1c;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #e08e16;
+        }
+        .btn-info {
+            background: #4cc9f0;
+            color: white;
+        }
+        .btn-info:hover {
+            background: #3bb8de;
+        }
+        .btn-danger {
+            background: #e71d36;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #cc192f;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .status-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .status-card h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .status-card .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-dot.green { background: #2ec4b6; }
+        .status-dot.red { background: #e71d36; }
+        .status-dot.gray { background: #aaa; }
+        .card-body {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #666;
+        }
+        .card-body .label {
+            font-weight: 600;
+            color: #444;
+            margin-right: 5px;
+        }
+        .result-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+        .result-panel h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #resultContent {
+            background: #1a1a2e;
+            color: #00ff88;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            min-height: 100px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar.active {
+            display: block;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4361ee, #4cc9f0);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .table-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .table-stat {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .table-stat .name {
+            font-size: 13px;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .table-stat .count {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 5px 0;
+            color: #1a1a2e;
+        }
+        .table-stat .match {
+            font-size: 13px;
+        }
+        .match-yes { color: #2ec4b6; }
+        .match-no { color: #e71d36; }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+            max-width: 400px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success { background: #2ec4b6; }
+        .toast.error { background: #e71d36; }
+        .toast.info { background: #4361ee; }
+        .clear-btn {
+            float: right;
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #666;
+        }
+        .clear-btn:hover {
+            background: #f5f5f5;
+        }
+        @media (max-width: 600px) {
+            .status-cards { grid-template-columns: 1fr; }
+            .header-actions { flex-direction: column; }
+            .header-actions button { width: 100%; }
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔄 Sync Manager</h1>
+    <p class="subtitle">ซิงค์ข้อมูลระหว่าง XAMPP (MySQL) ↔ Supabase (PostgreSQL)</p>
+    
+    <!-- Status Cards -->
+    <div class="status-cards" id="statusCards">
+        <div class="status-card" id="mysqlStatus">
+            <h3>🟢 XAMPP (MySQL)</h3>
+            <div class="status-indicator">
+                <span class="status-dot gray"></span>
+                <span>Checking...</span>
+            </div>
+            <div class="card-body">
+                <span class="label">Host:</span> <?= MYSQL_HOST ?>
+            </div>
+        </div>
+        <div class="status-card" id="pgsqlStatus">
+            <h3>🔵 Supabase (PostgreSQL)</h3>
+            <div class="status-indicator">
+                <span class="status-dot gray"></span>
+                <span>Checking...</span>
+            </div>
+            <div class="card-body">
+                <span class="label">Host:</span> <?= PGSQL_HOST ?>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="header-actions">
+        <button class="btn btn-primary" onclick="testConnections()">🔌 Test Connections</button>
+        <button class="btn btn-info" onclick="verifySync()">📊 Verify Sync</button>
+        <button class="btn btn-success" onclick="syncAll()">🚀 Sync All to Supabase</button>
+        <button class="btn btn-warning" onclick="setupTables()">📋 Setup Supabase Tables</button>
+    </div>
+    
+    <!-- Table Stats -->
+    <div class="table-stats" id="tableStats"></div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    
+    <!-- Result Panel -->
+    <div class="result-panel">
+        <h2>
+            📄 Result
+            <button class="clear-btn" onclick="clearResult()">Clear</button>
+        </h2>
+        <div id="resultContent">Click a button above to start...</div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==========================================
+// Core Functions
+// ==========================================
+
+const API_BASE = 'api/sync.php';
+
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast ' + type + ' show';
+    setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+function showLoading(btn, loading = true) {
+    if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Loading...';
+    } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.getAttribute('data-original') || btn.textContent;
+    }
+}
+
+function setProgress(percent) {
+    const bar = document.getElementById('progressBar');
+    const fill = document.getElementById('progressFill');
+    if (percent === 0) {
+        bar.classList.remove('active');
+    } else {
+        bar.classList.add('active');
+        fill.style.width = percent + '%';
+    }
+}
+
+function clearResult() {
+    document.getElementById('resultContent').textContent = 'Cleared.';
+}
+
+function updateResult(data) {
+    const el = document.getElementById('resultContent');
+    el.textContent = JSON.stringify(data, null, 2);
+}
+
+function appendResult(text) {
+    const el = document.getElementById('resultContent');
+    el.textContent += '\n' + text;
+    el.scrollTop = el.scrollHeight;
+}
+
+async function apiCall(action, method = 'GET', body = null) {
+    const url = method === 'GET' ? `${API_BASE}?action=${action}` : `${API_BASE}?action=${action}`;
+    const options = {
+        method: method,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    };
+    if (body) {
+        options.body = body;
+    }
+    
+    const response = await fetch(url, options);
+    return await response.json();
+}
+
+// ==========================================
+// Status & Table Stats
+// ==========================================
+
+function updateConnectionStatus(data) {
+    // Update MySQL status
+    const mysqlCard = document.getElementById('mysqlStatus');
+    const mysqlDot = mysqlCard.querySelector('.status-dot');
+    const mysqlText = mysqlCard.querySelector('.status-indicator span:last-child');
+    if (data.data.mysql.connected) {
+        mysqlDot.className = 'status-dot green';
+        mysqlText.textContent = '✅ Connected';
+    } else {
+        mysqlDot.className = 'status-dot red';
+        mysqlText.textContent = '❌ ' + (data.data.mysql.message || 'Failed');
+    }
+    
+    // Update PostgreSQL status
+    const pgsqlCard = document.getElementById('pgsqlStatus');
+    const pgsqlDot = pgsqlCard.querySelector('.status-dot');
+    const pgsqlText = pgsqlCard.querySelector('.status-indicator span:last-child');
+    if (data.data.pgsql.connected) {
+        pgsqlDot.className = 'status-dot green';
+        pgsqlText.textContent = '✅ Connected';
+    } else {
+        pgsqlDot.className = 'status-dot red';
+        pgsqlText.textContent = '❌ ' + (data.data.pgsql.message || 'Failed');
+    }
+}
+
+function updateTableStats(data) {
+    const container = document.getElementById('tableStats');
+    let html = '';
+    
+    if (data.data) {
+        for (const [table, info] of Object.entries(data.data)) {
+            const displayName = table.replace('tb_', '').charAt(0).toUpperCase() + table.replace('tb_', '').slice(1);
+            html += `
+                <div class="table-stat">
+                    <div class="name">${displayName}</div>
+                    <div class="count">${info.mysql_count} / ${info.pgsql_count}</div>
+                    <div class="match ${info.match ? 'match-yes' : 'match-no'}">
+                        ${info.match ? '✅ Synced' : '⚠️ Diff: ' + info.difference}
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    container.innerHTML = html || '<p style="color:#888; text-align:center; grid-column: 1/-1;">Run Verify to see table stats</p>';
+}
+
+// ==========================================
+// Action Functions
+// ==========================================
+
+async function testConnections() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Testing...';
+    
+    try {
+        const result = await apiCall('test');
+        updateResult(result);
+        updateConnectionStatus(result);
+        
+        if (result.success) {
+            showToast('✅ Both databases connected successfully!', 'success');
+        } else {
+            showToast('⚠️ Some connections failed. Check details.', 'error');
+        }
+    } catch (e) {
+        updateResult({ error: true, message: e.message });
+        showToast('❌ Error: ' + e.message, 'error');
+    }
+    
+    btn.disabled = false;
+    btn.textContent = '🔌 Test Connections';
+}
+
+async function verifySync() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Verifying...';
+    
+    try {
+        const result = await apiCall('verify');
+        updateResult(result);
+        updateTableStats(result);
+        
+        if (result.success) {
+            showToast(result.message, 'success');
+        } else {
+            showToast(result.message, 'warning');
+        }
+    } catch (e) {
+        updateResult({ error: true, message: e.message });
+        showToast('❌ Error: ' + e.message, 'error');
+    }
+    
+    btn.disabled = false;
+    btn.textContent = '📊 Verify Sync';
+}
+
+async function syncAll() {
+    if (!confirm('Are you sure you want to sync ALL data from MySQL to Supabase?\n\nThis will overwrite all data in Supabase with data from your local XAMPP.')) {
+        return;
+    }
+    
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Syncing...';
+    
+    setProgress(10);
+    
+    try {
+        // First test connections
+        setProgress(20);
+        const testResult = await apiCall('test');
+        
+        if (!testResult.success) {
+            updateResult(testResult);
+            showToast('❌ Cannot sync: database connections failed', 'error');
+            btn.disabled = false;
+            btn.textContent = originalText;
+            setProgress(0);
+            return;
+        }
+        
+        // Ensure tables exist
+        setProgress(30);
+        await apiCall('setup_tables');
+        
+        // Sync all tables
+        setProgress(50);
+        const result = await apiCall('sync_all');
+        setProgress(90);
+        
+        updateResult(result);
+        
+        if (result.success) {
+            showToast('✅ ' + result.message, 'success');
+        } else {
+            showToast('⚠️ Sync completed with errors', 'warning');
+        }
+        
+        // Verify after sync
+        setProgress(95);
+        const verifyResult = await apiCall('verify');
+        updateTableStats(verifyResult);
+        
+        setProgress(100);
+        setTimeout(() => setProgress(0), 1000);
+    } catch (e) {
+        updateResult({ error: true, message: e.message });
+        showToast('❌ Error: ' + e.message, 'error');
+        setProgress(0);
+    }
+    
+    btn.disabled = false;
+    btn.textContent = originalText;
+}
+
+async function setupTables() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Setting up...';
+    
+    try {
+        const result = await apiCall('setup_tables');
+        updateResult(result);
+        
+        if (result.success) {
+            showToast('✅ Supabase tables ready!', 'success');
+        } else {
+            showToast('⚠️ ' + (result.message || 'Setup completed'), 'info');
+        }
+    } catch (e) {
+        updateResult({ error: true, message: e.message });
+        showToast('❌ Error: ' + e.message, 'error');
+    }
+    
+    btn.disabled = false;
+    btn.textContent = '📋 Setup Supabase Tables';
+}
+
+// ==========================================
+// Initialization
+// ==========================================
+
+// Auto-test connections on page load
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const result = await apiCall('test');
+        updateConnectionStatus(result);
+        
+        // Also try to verify
+        try {
+            const verifyResult = await apiCall('verify');
+            updateTableStats(verifyResult);
+            updateResult(verifyResult);
+        } catch (e) {
+            // Ignore verify errors on load
+        }
+    } catch (e) {
+        // Ignore test errors on load
+    }
+});
+</script>
+</body>
+</html>

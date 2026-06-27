@@ -1,23 +1,12 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IT Borrow & Repair System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<<<<<<< HEAD
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-  <script src="ui.js" defer></script>
-  <script src="auth.js" defer></script>
-  <script src="equipment.js" defer></script>
-  <script src="users.js" defer></script>
-  <script src="borrow.js" defer></script>
-  <script src="repair.js" defer></script>
-  <script src="report.js" defer></script>
-  <script src="dashboard.js" defer></script>
-=======
   <link rel="stylesheet" href="assets/css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="assets/js/ui.js" defer></script>
@@ -28,21 +17,27 @@
   <script src="assets/js/repair.js" defer></script>
   <script src="assets/js/report.js" defer></script>
   <script src="assets/js/dashboard.js" defer></script>
->>>>>>> 63b5fbd (initial commit)
 </head>
+
 <body>
 
   <!-- Login Page -->
   <div id="page-login" class="page active login-wrapper">
     <div class="login-box">
       <div class="login-logo">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary)"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary)">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
       </div>
       <h2>ระบบยืม-คืนและแจ้งซ่อม IT</h2>
       <p>เข้าสู่ระบบเพื่อดำเนินการ</p>
       <input type="text" id="login-user" placeholder="Username (admin/staff/user)" />
       <input type="password" id="login-pass" placeholder="Password" />
-      <button class="btn btn-blue" style="width:100%; margin-top:10px; font-size: 16px; padding: 14px;" onclick="handleLogin()">
+      <button class="btn btn-blue" style="width:100%; margin-top:10px; font-size: 16px; padding: 14px;"
+        onclick="handleLogin()">
         เข้าสู่ระบบ
       </button>
     </div>
@@ -53,12 +48,19 @@
     <!-- Navigation -->
     <nav class="navbar">
       <div class="nav-logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary)"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-        <span class="nav-logo-text">IT ASSET SYS</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary)">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        <span class="nav-logo-text">IT Asset Loan & Repair</span>
       </div>
       <div class="nav-tabs" id="nav-tabs">
-        <button class="nav-tab role-staff role-admin" data-page="dashboard" onclick="showPage('dashboard')">Dashboard</button>
-        <button class="nav-tab role-admin" data-page="equipment" onclick="showPage('equipment')">อุปกรณ์ (Asset)</button>
+        <button class="nav-tab role-staff role-admin" data-page="dashboard"
+          onclick="showPage('dashboard')">Dashboard</button>
+        <button class="nav-tab role-admin" data-page="equipment" onclick="showPage('equipment')">อุปกรณ์
+          (Asset)</button>
         <button class="nav-tab role-admin" data-page="users" onclick="showPage('users')">ผู้ใช้งาน</button>
         <button class="nav-tab role-all" data-page="borrow" onclick="showPage('borrow')">ยืม-คืนพัสดุ</button>
         <button class="nav-tab role-all" data-page="repair" onclick="showPage('repair')">แจ้งซ่อม (Repair)</button>
@@ -73,7 +75,7 @@
     <!-- Dashboard Page -->
     <div id="page-dashboard" class="page">
       <h2 class="page-title">ภาพรวมระบบ (Dashboard)</h2>
-      
+
       <div class="dash-overview">
         <div class="stat-card">
           <span class="stat-label">อุปกรณ์ทั้งหมดในระบบ</span>
@@ -160,14 +162,22 @@
       <!-- Request Card -->
       <div class="borrow-hero">
         <div class="borrow-hero-icon">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+          </svg>
         </div>
         <div class="borrow-hero-text">
           <h3>ต้องการยืมอุปกรณ์?</h3>
           <p>เลือกอุปกรณ์ที่ว่างและระบุเหตุผลในการยืม เจ้าหน้าที่จะดำเนินการอนุมัติให้ภายหลัง</p>
         </div>
         <button class="btn btn-green" style="flex-shrink:0;" onclick="openBorrowModal()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
           ส่งคำร้องยืม
         </button>
       </div>
@@ -195,7 +205,8 @@
       </div>
       <div class="data-table">
         <div class="table-head table-repair-grid">
-          <span>ID</span><span>ผู้แจ้ง (User)</span><span>อุปกรณ์ (Asset)</span><span>อาการเสีย</span><span>สถานะ (Status)</span><span>จัดการ (Action)</span>
+          <span>ID</span><span>ผู้แจ้ง (User)</span><span>อุปกรณ์ (Asset)</span><span>อาการเสีย</span><span>สถานะ
+            (Status)</span><span>จัดการ (Action)</span>
         </div>
         <div id="repair-list"></div>
       </div>
@@ -209,16 +220,29 @@
       <div class="report-toolbar">
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
           <button class="btn btn-blue report-type-btn" id="btn-report-borrows" onclick="renderReport('borrows')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
             รายงานการยืม-คืน
           </button>
           <button class="btn btn-blue report-type-btn" id="btn-report-repairs" onclick="renderReport('repairs')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+            </svg>
             รายงานการแจ้งซ่อม
           </button>
         </div>
         <button class="btn btn-green" onclick="window.print()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
           พิมพ์รายงาน
         </button>
       </div>
@@ -227,9 +251,17 @@
       <div id="printable-report">
         <!-- Placeholder -->
         <div class="report-placeholder" id="report-placeholder">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); margin-bottom:16px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); margin-bottom:16px;">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
           <p style="color:var(--text-muted); font-size:16px; font-weight:500;">เลือกประเภทรายงานเพื่อดูข้อมูล</p>
-          <p style="color:var(--text-muted); font-size:13px; margin-top:6px; opacity:0.7;">กดปุ่ม "รายงานการยืม-คืน" หรือ "รายงานการแจ้งซ่อม" ด้านบน</p>
+          <p style="color:var(--text-muted); font-size:13px; margin-top:6px; opacity:0.7;">กดปุ่ม "รายงานการยืม-คืน"
+            หรือ "รายงานการแจ้งซ่อม" ด้านบน</p>
         </div>
 
         <!-- Report Content (hidden until loaded) -->
@@ -258,4 +290,5 @@
     document.addEventListener('DOMContentLoaded', () => checkAuth());
   </script>
 </body>
+
 </html>

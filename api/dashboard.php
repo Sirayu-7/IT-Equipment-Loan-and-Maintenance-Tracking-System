@@ -4,12 +4,27 @@ require_once 'db.php';
 header('Content-Type: application/json');
 
 try {
+    // Determine date interval SQL for each database type
+    if ($db->isPostgres()) {
+        // PostgreSQL date expressions
+        $dateExpr = "CURRENT_DATE - INTERVAL '6 days'";
+        $dateGroupExpr = "DATE(borrow_date)";
+        $dateReturnExpr = "DATE(return_date)";
+        $dateRepairExpr = "DATE(report_date)";
+    } else {
+        // MySQL date expressions
+        $dateExpr = "DATE(NOW()) - INTERVAL 6 DAY";
+        $dateGroupExpr = "DATE(borrow_date)";
+        $dateReturnExpr = "DATE(return_date)";
+        $dateRepairExpr = "DATE(report_date)";
+    }
+
     // Borrow counts by day (new requests, last 7 days)
     $stmtBorrow = $pdo->query("
-        SELECT DATE(borrow_date) as date, COUNT(*) as count 
+        SELECT {$dateGroupExpr} as date, COUNT(*) as count 
         FROM tb_transactions 
-        WHERE borrow_date >= DATE(NOW()) - INTERVAL 6 DAY 
-        GROUP BY DATE(borrow_date)
+        WHERE borrow_date >= {$dateExpr}
+        GROUP BY {$dateGroupExpr}
     ");
     $borrowByDate = [];
     foreach ($stmtBorrow->fetchAll() as $row) {
@@ -18,11 +33,11 @@ try {
 
     // Return counts by day (last 7 days)
     $stmtReturn = $pdo->query("
-        SELECT DATE(return_date) as date, COUNT(*) as count 
+        SELECT {$dateReturnExpr} as date, COUNT(*) as count 
         FROM tb_transactions 
         WHERE return_date IS NOT NULL 
-          AND return_date >= DATE(NOW()) - INTERVAL 6 DAY 
-        GROUP BY DATE(return_date)
+          AND return_date >= {$dateExpr}
+        GROUP BY {$dateReturnExpr}
     ");
     $returnByDate = [];
     foreach ($stmtReturn->fetchAll() as $row) {
@@ -31,10 +46,10 @@ try {
 
     // Repair request counts by day (last 7 days)
     $stmtRepair = $pdo->query("
-        SELECT DATE(report_date) as date, COUNT(*) as count
+        SELECT {$dateRepairExpr} as date, COUNT(*) as count
         FROM tb_repairs
-        WHERE report_date >= DATE(NOW()) - INTERVAL 6 DAY
-        GROUP BY DATE(report_date)
+        WHERE report_date >= {$dateExpr}
+        GROUP BY {$dateRepairExpr}
     ");
     $repairByDate = [];
     foreach ($stmtRepair->fetchAll() as $row) {

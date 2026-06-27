@@ -38,11 +38,13 @@ if ($method === 'GET') {
         try {
             $pdo->beginTransaction();
             
-            $stmt = $pdo->prepare("UPDATE tb_transactions SET trans_status = ? WHERE trans_id = ?");
             if ($data['status'] === 'returned') {
-                $stmt = $pdo->prepare("UPDATE tb_transactions SET trans_status = ?, return_date = NOW() WHERE trans_id = ?");
+                $nowExpr = $db->isPostgres() ? 'CURRENT_TIMESTAMP' : 'NOW()';
+                $stmt = $db->query("UPDATE tb_transactions SET trans_status = ?, return_date = " . $nowExpr . " WHERE trans_id = ?", [$data['status'], $data['id']]);
+            } else {
+                $stmt = $pdo->prepare("UPDATE tb_transactions SET trans_status = ? WHERE trans_id = ?");
+                $stmt->execute([$data['status'], $data['id']]);
             }
-            $stmt->execute([$data['status'], $data['id']]);
             
             if ($data['status'] === 'approved') {
                 $stmtGet = $pdo->prepare("SELECT asset_id FROM tb_transactions WHERE trans_id = ?");
@@ -66,7 +68,7 @@ if ($method === 'GET') {
             echo json_encode(["success" => true]);
         } catch (Exception $e) {
             $pdo->rollBack();
-            echo json_encode(["success" => false]);
+            echo json_encode(["success" => false, "message" => $e->getMessage()]);
         }
     }
 }

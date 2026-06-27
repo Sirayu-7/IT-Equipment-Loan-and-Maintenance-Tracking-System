@@ -23,8 +23,8 @@ async function loadDashboard() {
           {
             label: 'ยืม',
             data: [],
-            backgroundColor: 'rgba(59, 130, 246, 0.85)',
-            borderColor: 'rgba(59, 130, 246, 1)',
+            backgroundColor: 'rgba(20, 184, 166, 0.85)',
+            borderColor: 'rgba(20, 184, 166, 1)',
             borderWidth: 1,
             borderRadius: 6,
             maxBarThickness: 36
@@ -32,8 +32,8 @@ async function loadDashboard() {
           {
             label: 'คืน',
             data: [],
-            backgroundColor: 'rgba(251, 191, 36, 0.85)',
-            borderColor: 'rgba(251, 191, 36, 1)',
+            backgroundColor: 'rgba(245, 158, 11, 0.85)',
+            borderColor: 'rgba(245, 158, 11, 1)',
             borderWidth: 1,
             borderRadius: 6,
             maxBarThickness: 36
@@ -41,8 +41,8 @@ async function loadDashboard() {
           {
             label: 'แจ้งซ่อม',
             data: [],
-            backgroundColor: 'rgba(248, 113, 113, 0.85)',
-            borderColor: 'rgba(248, 113, 113, 1)',
+            backgroundColor: 'rgba(249, 115, 22, 0.85)',
+            borderColor: 'rgba(249, 115, 22, 1)',
             borderWidth: 1,
             borderRadius: 6,
             maxBarThickness: 36
@@ -96,12 +96,12 @@ async function loadDashboard() {
         datasets: [{
           data: [pendingBorrows, pendingRepairs],
           backgroundColor: [
-            'rgba(52, 211, 153, 0.85)',
-            'rgba(248, 113, 113, 0.85)'
+            'rgba(20, 184, 166, 0.85)',
+            'rgba(249, 115, 22, 0.85)'
           ],
           borderColor: [
-            'rgba(52, 211, 153, 1)',
-            'rgba(248, 113, 113, 1)'
+            'rgba(20, 184, 166, 1)',
+            'rgba(249, 115, 22, 1)'
           ],
           borderWidth: 2
         }]

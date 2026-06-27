@@ -1,51 +1,62 @@
 <?php
-// api/db.php
-$host = '127.0.0.1';
-$db   = 'atc_it_asset_db';
-$user = 'root';
-$pass = ''; // Default XAMPP password
-$charset = 'utf8mb4';
+// api/db.php - Unified Database Connection
+// Supports both XAMPP (MySQL) and Supabase (PostgreSQL)
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
+require_once __DIR__ . '/../lib/Database.php';
 
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
+// Get the database instance
+$db = Database::getInstance();
 
-    // Keep older databases compatible with dashboard statistics.
-    $col = $pdo->query("SHOW COLUMNS FROM tb_transactions LIKE 'return_date'")->fetch();
-    if (!$col) {
-        $pdo->exec("ALTER TABLE tb_transactions ADD COLUMN return_date datetime DEFAULT NULL AFTER borrow_date");
-    }
-    $pdo->exec("
-        UPDATE tb_transactions
-        SET return_date = borrow_date
-        WHERE trans_status = 'returned'
-          AND return_date IS NULL
-    ");
+// For backward compatibility with existing code that uses $pdo directly
+$pdo = $db->getConnection();
 
-    $col = $pdo->query("SHOW COLUMNS FROM tb_repairs LIKE 'report_date'")->fetch();
-    if (!$col) {
-        $pdo->exec("ALTER TABLE tb_repairs ADD COLUMN report_date datetime DEFAULT current_timestamp() AFTER repair_status");
-    }
-} catch (\PDOException $e) {
-    // If DB doesn't exist, we'll try to connect without dbname first, useful for setup script
-    if (strpos($e->getMessage(), 'Unknown database') !== false) {
-        try {
-            $pdo = new PDO("mysql:host=$host;charset=$charset", $user, $pass, $options);
-        } catch (\PDOException $e2) {
-            header('Content-Type: application/json');
-            echo json_encode(["error" => "Connection failed: " . $e2->getMessage()]);
-            exit;
+// =============================================
+// Schema Migration / Maintenance
+// =============================================
+if ($db->isMysql()) {
+    // MySQL-specific migrations (backward compatibility)
+    try {
+        $col = $pdo->query("SHOW COLUMNS FROM tb_transactions LIKE 'return_date'")->fetch();
+        if (!$col) {
+            $pdo->exec("ALTER TABLE tb_transactions ADD COLUMN return_date datetime DEFAULT NULL AFTER borrow_date");
         }
-    } else {
-        header('Content-Type: application/json');
-        echo json_encode(["error" => "Connection failed: " . $e->getMessage()]);
-        exit;
+        $pdo->exec("
+            UPDATE tb_transactions
+            SET return_date = borrow_date
+            WHERE trans_status = 'returned'
+              AND return_date IS NULL
+        ");
+
+        $col = $pdo->query("SHOW COLUMNS FROM tb_repairs LIKE 'report_date'")->fetch();
+        if (!$col) {
+            $pdo->exec("ALTER TABLE tb_repairs ADD COLUMN report_date datetime DEFAULT current_timestamp() AFTER repair_status");
+        }
+    } catch (\PDOException $e) {
+        // Ignore migration errors for non-existent tables
+    }
+} else {
+    // PostgreSQL (Supabase) migration checks
+    try {
+        // Check if return_date column exists in tb_transactions
+        $stmt = $pdo->query("SELECT column_name FROM information_schema.columns WHERE table_name = 'tb_transactions' AND column_name = 'return_date'");
+        if (!$stmt->fetch()) {
+            $pdo->exec("ALTER TABLE tb_transactions ADD COLUMN return_date TIMESTAMP DEFAULT NULL");
+        }
+        
+        // Fix null return_date for returned items
+        $pdo->exec("
+            UPDATE tb_transactions
+            SET return_date = borrow_date
+            WHERE trans_status = 'returned'
+              AND return_date IS NULL
+        ");
+        
+        // Check if report_date column exists in tb_repairs
+        $stmt = $pdo->query("SELECT column_name FROM information_schema.columns WHERE table_name = 'tb_repairs' AND column_name = 'report_date'");
+        if (!$stmt->fetch()) {
+            $pdo->exec("ALTER TABLE tb_repairs ADD COLUMN report_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+        }
+    } catch (\PDOException $e) {
+        // Ignore migration errors for non-existent tables
     }
 }
-?>
